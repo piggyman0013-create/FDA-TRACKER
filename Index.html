@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FDA Tracker — Earthline</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f4f6f9; --bg2: #fff; --bg3: #f8fafc; --bg4: #f1f5f9;
+  --border: #e2e8f0; --border2: #f1f5f9;
+  --text: #1a202c; --text2: #374151; --text3: #64748b; --text4: #94a3b8;
+  --accent: #3b82f6; --accent2: #2563eb;
+  --green: #22c55e; --green-bg: #f0fdf4; --green-text: #15803d; --green-border: #bbf7d0;
+  --yellow: #eab308; --yellow-bg: #fef9c3; --yellow-text: #854d0e; --yellow-border: #fde68a;
+  --orange: #f97316; --orange-bg: #fff7ed; --orange-text: #c2410c; --orange-border: #fed7aa;
+  --purple: #a855f7; --purple-bg: #faf5ff; --purple-text: #7e22ce; --purple-border: #e9d5ff;
+  --red: #ef4444; --red-bg: #fff0f0; --red-text: #dc2626; --red-border: #fca5a5;
+  --teal: #14b8a6; --teal-bg: #f0fdfa; --teal-text: #0f766e; --teal-border: #99f6e4;
+  --pink-bg: #fdf2f8; --pink-text: #9d174d; --pink-border: #fbcfe8;
+  --indigo-bg: #eef2ff; --indigo-text: #3730a3; --indigo-border: #c7d2fe;
+}
+[data-theme="dark"] {
+  --bg: #0f1117; --bg2: #1a1d27; --bg3: #222636; --bg4: #2a2f42;
+  --border: #2d3348; --border2: #242840;
+  --text: #e8eaf0; --text2: #c4c9d8; --text3: #8b92a8; --text4: #555e75;
+  --green-bg: rgba(34,197,94,.12); --green-text: #4ade80; --green-border: rgba(34,197,94,.25);
+  --yellow-bg: rgba(234,179,8,.12); --yellow-text: #fbbf24; --yellow-border: rgba(234,179,8,.25);
+  --orange-bg: rgba(249,115,22,.12); --orange-text: #fb923c; --orange-border: rgba(249,115,22,.25);
+  --purple-bg: rgba(168,85,247,.12); --purple-text: #c084fc; --purple-border: rgba(168,85,247,.25);
+  --red-bg: rgba(239,68,68,.12); --red-text: #f87171; --red-border: rgba(239,68,68,.25);
+  --teal-bg: rgba(20,184,166,.12); --teal-text: #2dd4bf; --teal-border: rgba(20,184,166,.25);
+  --pink-bg: rgba(236,72,153,.12); --pink-text: #f472b6; --pink-border: rgba(236,72,153,.25);
+  --indigo-bg: rgba(99,102,241,.12); --indigo-text: #818cf8; --indigo-border: rgba(99,102,241,.25);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'IBM Plex Sans Thai', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.6; transition: background 0.2s, color 0.2s; }
+
+/* Nav */
+.topnav { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 0 18px; display: flex; align-items: center; height: 52px; gap: 0; }
+.brand { font-weight: 600; font-size: 15px; color: var(--text); margin-right: 24px; white-space: nowrap; }
+.brand span { color: var(--accent); }
+.nav-tabs { display: flex; gap: 2px; }
+.nav-tab { padding: 6px 14px; border-radius: 6px; border: none; background: none; font-family: 'IBM Plex Sans Thai', sans-serif; font-size: 13px; font-weight: 500; color: var(--text3); cursor: pointer; transition: background 0.15s, color 0.15s; }
+.nav-tab:hover { background: var(--bg4); color: var(--text); }
+.nav-tab.active { background: var(--indigo-bg); color: var(--accent); }
+.nav-right { display: flex; gap: 8px; margin-left: auto; align-items: center; }
+
+/* Dark mode toggle */
+.dm-toggle { background: var(--bg3); border: 1px solid var(--border); border-radius: 20px; padding: 4px 10px; font-size: 12px; color: var(--text3); cursor: pointer; display: flex; align-items: center; gap: 5px; transition: all 0.15s; }
+.dm-toggle:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Lock badge */
+.lock-badge { font-size: 11px; padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border); background: var(--bg3); color: var(--text3); cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.15s; }
+.lock-badge.unlocked { background: var(--green-bg); color: var(--green-text); border-color: var(--green-border); }
+.lock-badge:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Buttons */
+.btn { padding: 7px 14px; border-radius: 7px; font-family: 'IBM Plex Sans Thai', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 5px; transition: all 0.15s; }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: var(--accent2); }
+.btn-outline { background: var(--bg2); color: var(--text2); border: 1px solid var(--border); }
+.btn-outline:hover { background: var(--bg3); }
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+.btn-danger { background: var(--red-bg); color: var(--red-text); border: 1px solid var(--red-border); }
+.btn-danger:hover { opacity: 0.8; }
+.btn-teal { background: var(--teal-bg); color: var(--teal-text); border: 1px solid var(--teal-border); }
+
+/* Syncbar */
+.syncbar { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 5px 18px; font-size: 11px; color: var(--text4); display: flex; align-items: center; gap: 6px; }
+.sync-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; flex-shrink: 0; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+
+/* Content */
+.content { padding: 16px 18px; }
+.page { display: none; }
+.page.active { display: block; }
+
+/* Stats */
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+.stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 13px 15px; border-left: 3px solid var(--border); }
+.stat-card.s-all  { border-left-color: var(--text4); }
+.stat-card.s-prep { border-left-color: var(--yellow); }
+.stat-card.s-active { border-left-color: var(--accent); }
+.stat-card.s-wait { border-left-color: var(--orange); }
+.stat-card.s-done { border-left-color: var(--green); }
+.stat-label { font-size: 10px; color: var(--text4); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 5px; }
+.stat-value { font-size: 26px; font-weight: 600; font-family: 'IBM Plex Mono', monospace; line-height: 1; color: var(--text); }
+.stat-card.s-prep .stat-value { color: var(--yellow-text); }
+.stat-card.s-active .stat-value { color: var(--accent); }
+.stat-card.s-wait .stat-value { color: var(--orange-text); }
+.stat-card.s-done .stat-value { color: var(--green-text); }
+.stat-sub { font-size: 10px; color: var(--text4); margin-top: 3px; }
+
+/* Card */
+.card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 14px; }
+.card-header { padding: 11px 14px; border-bottom: 1px solid var(--border2); display: flex; align-items: center; justify-content: space-between; background: var(--bg3); }
+.card-title { font-size: 13px; font-weight: 600; color: var(--text2); }
+
+/* Toolbar */
+.toolbar { display: flex; gap: 8px; flex-wrap: wrap; padding: 10px 14px; background: var(--bg2); border-bottom: 1px solid var(--border2); }
+.search-wrap { position: relative; flex: 1; min-width: 180px; }
+.search-icon { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); color: var(--text4); pointer-events: none; }
+.search-input { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 7px; color: var(--text); font-family: 'IBM Plex Sans Thai', sans-serif; font-size: 13px; padding: 7px 10px 7px 32px; outline: none; }
+.search-input:focus { border-color: var(--accent); background: var(--bg2); }
+.filter-select { background: var(--bg3); border: 1px solid var(--border); border-radius: 7px; color: var(--text); font-family: 'IBM Plex Sans Thai', sans-serif; font-size: 13px; padding: 7px 10px; outline: none; cursor: pointer; }
+.filter-select:focus { border-color: var(--accent); }
+
+/* Table */
+.table-scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; min-width: 800px; }
+thead { background: var(--bg3); }
+th { padding: 8px 12px; text-align: left; font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); white-space: nowrap; }
+td { padding: 9px 12px; border-bottom: 1px solid var(--border2); font-size: 13px; vertical-align: middle; color: var(--text); }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg3); }
+.product-name { font-weight: 500; color: var(--text); }
+.product-sub { font-size: 10px; color: var(--text4); margin-top: 1px; font-family: 'IBM Plex Mono', monospace; }
+
+/* Stage badges — 7 stages */
+.stage-badge { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 500; white-space: nowrap; }
+.stage-1 { background: var(--yellow-bg); color: var(--yellow-text); border: 1px solid var(--yellow-border); }
+.stage-2 { background: var(--indigo-bg); color: var(--indigo-text); border: 1px solid var(--indigo-border); }
+.stage-3 { background: var(--orange-bg); color: var(--orange-text); border: 1px solid var(--orange-border); }
+.stage-4 { background: var(--purple-bg); color: var(--purple-text); border: 1px solid var(--purple-border); }
+.stage-5 { background: var(--pink-bg); color: var(--pink-text); border: 1px solid var(--pink-border); }
+.stage-6 { background: var(--teal-bg); color: var(--teal-text); border: 1px solid var(--teal-border); }
+.stage-7 { background: var(--green-bg); color: var(--green-text); border: 1px solid var(--green-border); }
+
+/* Progress */
+.progress-bar { display: flex; gap: 2px; width: 84px; }
+.progress-seg { height: 5px; flex: 1; border-radius: 2px; background: var(--border); }
+.progress-seg.filled.s1 { background: var(--yellow); }
+.progress-seg.filled.s2 { background: #6366f1; }
+.progress-seg.filled.s3 { background: var(--orange); }
+.progress-seg.filled.s4 { background: var(--purple); }
+.progress-seg.filled.s5 { background: #ec4899; }
+.progress-seg.filled.s6 { background: var(--teal); }
+.progress-seg.filled.s7 { background: var(--green); }
+
+/* ETA */
+.class-badge { font-size: 11px; font-family: 'IBM Plex Mono', monospace; background: var(--purple-bg); color: var(--purple-text); border: 1px solid var(--purple-border); border-radius: 4px; padding: 1px 6px; }
+.eta-ok { font-size: 12px; color: var(--teal-text); font-weight: 500; }
+.eta-warn { font-size: 12px; color: var(--orange-text); font-weight: 500; }
+.eta-over { font-size: 12px; color: var(--red-text); font-weight: 500; }
+.eta-sub { font-size: 10px; color: var(--text4); margin-top: 1px; }
+.skynet-link { display: inline-flex; align-items: center; font-size: 10px; color: var(--teal-text); background: var(--teal-bg); border: 1px solid var(--teal-border); border-radius: 4px; padding: 1px 5px; text-decoration: none; margin-top: 2px; }
+.action-row { display: flex; gap: 5px; }
+.empty-state { text-align: center; padding: 40px; color: var(--text4); font-size: 13px; }
+
+/* Inline panels */
+.inline-panel { display: none; background: var(--indigo-bg); border: 2px solid var(--accent); border-radius: 10px; padding: 2px; margin-bottom: 14px; }
+.inline-panel.open { display: block; }
+.panel-box { background: var(--bg2); border-radius: 8px; }
+.panel-header { padding: 14px 18px 11px; border-bottom: 1px solid var(--border2); display: flex; align-items: center; justify-content: space-between; }
+.panel-title { font-size: 14px; font-weight: 600; color: var(--text); }
+.panel-close { background: none; border: none; font-size: 18px; color: var(--text4); cursor: pointer; padding: 2px 8px; border-radius: 4px; line-height: 1; }
+.panel-close:hover { background: var(--bg4); color: var(--text); }
+.panel-body { padding: 16px 18px; max-height: 65vh; overflow-y: auto; }
+.panel-footer { padding: 12px 18px; border-top: 1px solid var(--border2); display: flex; justify-content: flex-end; gap: 8px; }
+
+/* Form */
+.form-group { margin-bottom: 13px; }
+.form-label { display: block; font-size: 12px; color: var(--text2); font-weight: 500; margin-bottom: 4px; }
+.form-input, .form-select, .form-textarea { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 7px; color: var(--text); font-family: 'IBM Plex Sans Thai', sans-serif; font-size: 13px; padding: 8px 10px; outline: none; transition: border-color 0.15s; }
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); background: var(--bg2); }
+.form-input[readonly] { background: var(--teal-bg); border-color: var(--teal-border); color: var(--teal-text); cursor: default; }
+.form-textarea { resize: vertical; min-height: 65px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.form-hint { font-size: 11px; color: var(--text3); margin-top: 3px; }
+
+/* Stage stepper */
+.stage-stepper { display: flex; gap: 5px; flex-wrap: wrap; }
+.stage-btn { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: var(--bg3); color: var(--text3); transition: all 0.15s; font-family: 'IBM Plex Sans Thai', sans-serif; }
+.stage-btn:hover { border-color: var(--accent); color: var(--accent); }
+.stage-btn.s1.active { background: var(--yellow-bg); border-color: var(--yellow); color: var(--yellow-text); }
+.stage-btn.s2.active { background: var(--indigo-bg); border-color: #6366f1; color: var(--indigo-text); }
+.stage-btn.s3.active { background: var(--orange-bg); border-color: var(--orange); color: var(--orange-text); }
+.stage-btn.s4.active { background: var(--purple-bg); border-color: var(--purple); color: var(--purple-text); }
+.stage-btn.s5.active { background: var(--pink-bg); border-color: #ec4899; color: var(--pink-text); }
+.stage-btn.s6.active { background: var(--teal-bg); border-color: var(--teal); color: var(--teal-text); }
+.stage-btn.s7.active { background: var(--green-bg); border-color: var(--green); color: var(--green-text); }
+
+/* Detail */
+.detail-row { display: flex; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border2); align-items: flex-start; }
+.detail-row:last-child { border-bottom: none; }
+.detail-key { font-size: 11px; color: var(--text4); width: 130px; flex-shrink: 0; padding-top: 1px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; }
+.detail-val { font-size: 13px; color: var(--text); flex: 1; }
+
+/* Config */
+.config-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 18px; margin-bottom: 12px; }
+.config-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.config-desc { font-size: 12px; color: var(--text3); margin-bottom: 12px; line-height: 1.7; }
+.code-badge { display: inline-block; background: var(--teal-bg); color: var(--teal-text); border: 1px solid var(--teal-border); border-radius: 4px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; padding: 1px 6px; }
+pre.code-block { background: var(--bg3); border: 1px solid var(--border); border-radius: 7px; padding: 12px; font-size: 11px; font-family: 'IBM Plex Mono', monospace; color: var(--text2); overflow-x: auto; line-height: 1.7; white-space: pre-wrap; }
+
+/* PIN modal */
+.pin-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 500; align-items: center; justify-content: center; }
+.pin-overlay.open { display: flex; }
+.pin-box { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 28px 32px; width: 300px; text-align: center; }
+.pin-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+.pin-sub { font-size: 12px; color: var(--text3); margin-bottom: 18px; }
+.pin-input { width: 100%; text-align: center; font-size: 22px; letter-spacing: 0.3em; font-family: 'IBM Plex Mono', monospace; background: var(--bg3); border: 2px solid var(--border); border-radius: 8px; color: var(--text); padding: 10px; outline: none; margin-bottom: 14px; }
+.pin-input:focus { border-color: var(--accent); }
+.pin-error { font-size: 12px; color: var(--red-text); margin-bottom: 10px; min-height: 18px; }
+.pin-row { display: flex; gap: 8px; }
+
+/* Toast */
+.toast { position: fixed; bottom: 20px; right: 20px; background: #1a202c; color: #fff; border-radius: 8px; padding: 10px 16px; font-size: 13px; z-index: 9999; display: flex; align-items: center; gap: 8px; transform: translateY(80px); opacity: 0; transition: transform 0.2s, opacity 0.2s; max-width: 300px; pointer-events: none; }
+[data-theme="dark"] .toast { background: #e8eaf0; color: #1a202c; }
+.toast.show { transform: translateY(0); opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- PIN overlay -->
+<div class="pin-overlay" id="pin-overlay">
+  <div class="pin-box">
+    <div class="pin-title">🔒 ยืนยันตัวตน</div>
+    <div class="pin-sub">ใส่ PIN เพื่อแก้ไขหรือลบข้อมูล</div>
+    <input type="password" class="pin-input" id="pin-input" maxlength="6" placeholder="••••" oninput="checkPinInput()">
+    <div class="pin-error" id="pin-error"></div>
+    <div class="pin-row">
+      <button class="btn btn-outline" style="flex:1;" onclick="closePinModal()">ยกเลิก</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="submitPin()">ยืนยัน</button>
+    </div>
+  </div>
+</div>
+
+<div class="topnav">
+  <div class="brand">Earthline <span>RA</span> · FDA Tracker</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('dashboard',this)">Dashboard</button>
+    <button class="nav-tab" onclick="showPage('cases',this)">รายการทะเบียน</button>
+    <button class="nav-tab" onclick="showPage('config',this)">ตั้งค่า</button>
+  </div>
+  <div class="nav-right">
+    <button class="dm-toggle" onclick="toggleDark()" id="dm-btn">🌙 Dark</button>
+    <button class="lock-badge" id="lock-badge" onclick="toggleLock()">🔒 ล็อก</button>
+    <button class="btn btn-outline btn-sm" onclick="exportCSV()">↓ CSV</button>
+    <button class="btn btn-primary btn-sm" onclick="requirePin(openAddModal)">+ เพิ่ม Case</button>
+  </div>
+</div>
+
+<div class="syncbar">
+  <div class="sync-dot"></div>
+  <span id="last-sync">กำลังเชื่อมต่อ...</span>
+  <span style="margin-left:auto;font-size:10px;">* ETA = ประมาณการตามระเบียบ อย. เท่านั้น ไม่ใช่วันที่ยืนยัน</span>
+</div>
+
+<div class="content">
+
+  <!-- Add/Edit panel -->
+  <div class="inline-panel" id="modal-wrap">
+    <div class="panel-box">
+      <div class="panel-header">
+        <div class="panel-title" id="modal-title">เพิ่ม Case ใหม่</div>
+        <button class="panel-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="panel-body">
+        <input type="hidden" id="edit-id">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">รหัส Case *</label>
+            <input type="text" class="form-input" id="f-id" placeholder="เช่น RA-2568-001">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Supplier *</label>
+            <input type="text" class="form-input" id="f-supplier" placeholder="เช่น GIVAS, Natus">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">ชื่อผลิตภัณฑ์ *</label>
+          <input type="text" class="form-input" id="f-product" placeholder="ชื่อเต็มของผลิตภัณฑ์">
+        </div>
+        <div class="form-group">
+          <label class="form-label">สถานะปัจจุบัน</label>
+          <div class="stage-stepper">
+            <button class="stage-btn s1" onclick="selectStage(1)">1. เตรียมเอกสาร</button>
+            <button class="stage-btn s2" onclick="selectStage(2)">2. ยื่น e-Submission</button>
+            <button class="stage-btn s3" onclick="selectStage(3)">3. รอผล อย.</button>
+            <button class="stage-btn s4" onclick="selectStage(4)">4. ตอบคำถาม อย.</button>
+            <button class="stage-btn s5" onclick="selectStage(5)">5. แก้ไขคำขอ/ส่งเจ้าหน้าที่</button>
+            <button class="stage-btn s6" onclick="selectStage(6)">6. ส่งผู้ประกอบการแก้ไข</button>
+            <button class="stage-btn s7" onclick="selectStage(7)">7. ได้รับใบอนุญาต</button>
+          </div>
+          <input type="hidden" id="f-stage" value="1">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Class เครื่องมือแพทย์</label>
+            <select class="form-select" id="f-class" onchange="updateETA()">
+              <option value="">— ไม่ระบุ —</option>
+              <option value="1">Class 1 (~30 วัน)</option>
+              <option value="2">Class 2 (~90–150 วัน)</option>
+              <option value="3">Class 3 (~150–200 วัน)</option>
+              <option value="4">Class 4 (~250–350 วัน)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">เส้นทางการยื่น</label>
+            <select class="form-select" id="f-pathway" onchange="updateETA()">
+              <option value="normal">ปกติ (Normal)</option>
+              <option value="abridged">Abridged (Big 5)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">วันที่ยื่น</label>
+            <input type="date" class="form-input" id="f-submit-date" oninput="updateETA()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">ETA คาดแล้วเสร็จ <span style="color:var(--teal-text);font-size:10px;">(คำนวณอัตโนมัติ)</span></label>
+            <input type="date" class="form-input" id="f-eta" readonly>
+            <div id="eta-note" class="form-hint"></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">วันครบกำหนด (กำหนดเอง)</label>
+          <input type="date" class="form-input" id="f-deadline">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">RA ผู้รับผิดชอบ</label>
+            <input type="text" class="form-input" id="f-officer" placeholder="ชื่อ RA">
+          </div>
+          <div class="form-group">
+            <label class="form-label">เลข Skynet Ref.</label>
+            <input type="text" class="form-input" id="f-skynet" placeholder="SKY-68-XXXX">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">หมายเหตุ / สิ่งที่ต้องดำเนินการ</label>
+          <textarea class="form-textarea" id="f-note" placeholder="รายละเอียด ปัญหา สิ่งที่ต้องทำ..."></textarea>
+        </div>
+      </div>
+      <div class="panel-footer">
+        <button class="btn btn-outline" onclick="closeModal()">ยกเลิก</button>
+        <button class="btn btn-primary" onclick="saveCase()">บันทึก</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail panel -->
+  <div class="inline-panel" id="detail-wrap">
+    <div class="panel-box">
+      <div class="panel-header">
+        <div class="panel-title" id="detail-title">รายละเอียด</div>
+        <button class="panel-close" onclick="closeDetail()">✕</button>
+      </div>
+      <div class="panel-body" id="detail-body"></div>
+      <div class="panel-footer">
+        <button class="btn btn-outline" onclick="closeDetail()">ปิด</button>
+        <button class="btn btn-primary" id="detail-edit-btn">แก้ไข</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div class="page active" id="page-dashboard">
+    <div class="stats-grid" id="stats-grid"></div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">Case ล่าสุดที่มีการเคลื่อนไหว</div></div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr>
+            <th>ผลิตภัณฑ์</th><th>Supplier</th><th>สถานะ</th><th>Class</th><th>ETA คาดแล้วเสร็จ</th><th>วันยื่น</th><th>อัปเดต</th>
+          </tr></thead>
+          <tbody id="dashboard-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cases -->
+  <div class="page" id="page-cases">
+    <div class="card">
+      <div class="toolbar">
+        <div class="search-wrap">
+          <svg class="search-icon" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" class="search-input" id="search-input" placeholder="ค้นหาชื่อ รหัส Supplier..." oninput="filterCases()">
+        </div>
+        <select class="filter-select" id="filter-stage" onchange="filterCases()">
+          <option value="">ทุกสถานะ</option>
+          <option value="1">1. เตรียมเอกสาร</option>
+          <option value="2">2. ยื่น e-Submission</option>
+          <option value="3">3. รอผล อย.</option>
+          <option value="4">4. ตอบคำถาม อย.</option>
+          <option value="5">5. แก้ไขคำขอ/ส่งเจ้าหน้าที่</option>
+          <option value="6">6. ส่งผู้ประกอบการแก้ไข</option>
+          <option value="7">7. ได้รับใบอนุญาต</option>
+        </select>
+        <select class="filter-select" id="filter-supplier" onchange="filterCases()">
+          <option value="">ทุก Supplier</option>
+        </select>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr>
+            <th>รหัส</th><th>ผลิตภัณฑ์</th><th>Supplier</th><th>สถานะ</th><th>คืบหน้า</th><th>Class</th><th>วันยื่น</th><th>ETA คาดแล้วเสร็จ</th><th>RA</th><th></th>
+          </tr></thead>
+          <tbody id="cases-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Config -->
+  <div class="page" id="page-config">
+    <div class="config-card">
+      <div class="config-title">🔐 ตั้งค่า PIN สำหรับแก้ไขข้อมูล</div>
+      <div class="config-desc">PIN ใช้ป้องกันไม่ให้คนอื่นแก้ไขหรือลบข้อมูลโดยไม่ได้รับอนุญาต (ค่าเริ่มต้น: 1234)</div>
+      <div class="form-row" style="max-width:360px;">
+        <div class="form-group">
+          <label class="form-label">PIN ใหม่ (4–6 หลัก)</label>
+          <input type="password" class="form-input" id="new-pin" placeholder="ใส่ PIN ใหม่" maxlength="6">
+        </div>
+        <div class="form-group">
+          <label class="form-label">ยืนยัน PIN</label>
+          <input type="password" class="form-input" id="confirm-pin" placeholder="ใส่อีกครั้ง" maxlength="6">
+        </div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="savePin()">บันทึก PIN</button>
+    </div>
+    <div class="config-card">
+      <div class="config-title">Google Sheets Backend</div>
+      <div class="config-desc">ระบบใช้ Google Sheets เป็นฐานข้อมูล ทุกคนเห็นข้อมูลเดียวกัน real-time</div>
+      <div class="form-group">
+        <label class="form-label">Google Apps Script Web App URL</label>
+        <input type="text" class="form-input" id="gas-url" placeholder="https://script.google.com/macros/s/.../exec" oninput="saveGasConfig()">
+      </div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:12px;">สถานะ: <span id="gas-status">—</span></div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-outline btn-sm" onclick="testConnection()">ทดสอบ</button>
+        <button class="btn btn-teal btn-sm" onclick="syncNow()">Sync ตอนนี้</button>
+      </div>
+    </div>
+    <div class="config-card">
+      <div class="config-title">Apps Script Code (อัปเดตล่าสุด — รองรับ GET params)</div>
+      <div class="config-desc">ลบ code เก่าออกทั้งหมด แล้ววาง code นี้แทน จากนั้น Deploy ใหม่</div>
+      <pre class="code-block" id="gas-code">const SHEET_NAME = 'Cases';
+
+function output(data) {
+  return ContentService
+    .createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doGet(e) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName(SHEET_NAME);
+
+  if (e.parameter && e.parameter.action) {
+    const action = e.parameter.action;
+    const p = JSON.parse(e.parameter.data || '{}');
+
+    if (action === 'add') {
+      sheet.appendRow([p.id,p.product,p.supplier,p.stage,p.submitDate,
+        p.deadline,p.officer,p.skynetRef,p.note,p.deviceClass,p.pathway,
+        p.etaDate,new Date().toISOString()]);
+      return output({ success: true, action: 'added' });
+    }
+
+    if (action === 'update') {
+      const data = sheet.getDataRange().getValues();
+      for (let i = 1; i < data.length; i++) {
+        if (String(data[i][0]) === String(p.id)) {
+          sheet.getRange(i+1,2).setValue(p.product||'');
+          sheet.getRange(i+1,3).setValue(p.supplier||'');
+          sheet.getRange(i+1,4).setValue(p.stage||1);
+          sheet.getRange(i+1,5).setValue(p.submitDate||'');
+          sheet.getRange(i+1,6).setValue(p.deadline||'');
+          sheet.getRange(i+1,7).setValue(p.officer||'');
+          sheet.getRange(i+1,8).setValue(p.skynetRef||'');
+          sheet.getRange(i+1,9).setValue(p.note||'');
+          sheet.getRange(i+1,10).setValue(p.deviceClass||'');
+          sheet.getRange(i+1,11).setValue(p.pathway||'');
+          sheet.getRange(i+1,12).setValue(p.etaDate||'');
+          sheet.getRange(i+1,13).setValue(new Date().toISOString());
+          return output({ success: true, action: 'updated' });
+        }
+      }
+      return output({ success: false, error: 'id not found' });
+    }
+
+    if (action === 'delete') {
+      const data = sheet.getDataRange().getValues();
+      for (let i = 1; i < data.length; i++) {
+        if (String(data[i][0]) === String(p.id)) {
+          sheet.deleteRow(i+1);
+          return output({ success: true, action: 'deleted' });
+        }
+      }
+      return output({ success: false, error: 'id not found' });
+    }
+  }
+
+  const data = sheet.getDataRange().getValues();
+  if (data.length < 2) return output({ success: true, data: [] });
+  const headers = data[0];
+  const rows = data.slice(1).filter(r => r[0]).map(row => {
+    const obj = {};
+    headers.forEach((h,i) => obj[h] = row[i]===null?'':String(row[i]));
+    return obj;
+  });
+  return output({ success: true, data: rows });
+}</pre>
+      <button class="btn btn-outline btn-sm" style="margin-top:10px;" onclick="copyScript()">Copy Script</button>
+    </div>
+    <div class="config-card">
+      <div class="config-title">จัดการข้อมูล Local</div>
+      <button class="btn btn-danger btn-sm" onclick="requirePin(clearData)">ล้างข้อมูลทั้งหมด</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"><span id="toast-icon">✓</span><span id="toast-msg">บันทึกสำเร็จ</span></div>
+
+<script>
+// ── State ─────────────────────────────────────────────────────
+let cases = JSON.parse(localStorage.getItem('fda_cases') || '[]');
+let editingId = null;
+let isUnlocked = false;
+let pinCallback = null;
+const DEFAULT_PIN = '1234';
+const GAS_URL_DEFAULT = 'https://script.google.com/macros/s/AKfycby9l__7wllMb1vb5NT55-RQ1h2q85R2LCBaGXX31wwrSRJ7Mh5yEf6-1AtSMsGk0mXz1A/exec';
+let gasUrl = localStorage.getItem('fda_gas_url') || GAS_URL_DEFAULT;
+
+const STAGES = {
+  1:{label:'เตรียมเอกสาร',cls:'stage-1'},
+  2:{label:'ยื่น e-Submission',cls:'stage-2'},
+  3:{label:'รอผล อย.',cls:'stage-3'},
+  4:{label:'ตอบคำถาม อย.',cls:'stage-4'},
+  5:{label:'แก้ไขคำขอ/ส่งเจ้าหน้าที่',cls:'stage-5'},
+  6:{label:'ส่งผู้ประกอบการแก้ไข',cls:'stage-6'},
+  7:{label:'ได้รับใบอนุญาต',cls:'stage-7'},
+};
+
+const ETA_CONFIG = {
+  1:{normal:{min:30,mid:30,max:45},abridged:{min:20,mid:25,max:35}},
+  2:{normal:{min:90,mid:120,max:150},abridged:{min:60,mid:80,max:105}},
+  3:{normal:{min:150,mid:175,max:200},abridged:{min:100,mid:120,max:140}},
+  4:{normal:{min:250,mid:300,max:350},abridged:{min:175,mid:210,max:245}},
+};
+
+// ── Init ───────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  localStorage.setItem('fda_gas_url', gasUrl);
+  document.getElementById('gas-url').value = gasUrl;
+  document.getElementById('gas-status').textContent = '✓ URL พร้อมใช้งาน';
+  document.getElementById('gas-status').style.color = 'var(--green-text)';
+  const dm = localStorage.getItem('fda_dark') === '1';
+  if (dm) { document.documentElement.setAttribute('data-theme','dark'); document.getElementById('dm-btn').textContent = '☀️ Light'; }
+  if (cases.length === 0) loadSampleData();
+  updateSupplierFilter();
+  renderDashboard();
+  renderCases();
+  syncNow();
+});
+
+// ── Dark mode ──────────────────────────────────────────────────
+function toggleDark() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.getElementById('dm-btn').textContent = isDark ? '🌙 Dark' : '☀️ Light';
+  localStorage.setItem('fda_dark', isDark ? '0' : '1');
+}
+
+// ── PIN system ─────────────────────────────────────────────────
+function getPin() { return localStorage.getItem('fda_pin') || DEFAULT_PIN; }
+
+function requirePin(cb) {
+  if (isUnlocked) { cb(); return; }
+  pinCallback = cb;
+  document.getElementById('pin-input').value = '';
+  document.getElementById('pin-error').textContent = '';
+  document.getElementById('pin-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('pin-input').focus(), 100);
+}
+
+function checkPinInput() {
+  // auto-submit when 4-6 digits entered
+  const v = document.getElementById('pin-input').value;
+  if (v.length >= 4 && v.length === getPin().length) submitPin();
+}
+
+function submitPin() {
+  const v = document.getElementById('pin-input').value;
+  if (v === getPin()) {
+    document.getElementById('pin-overlay').classList.remove('open');
+    isUnlocked = true;
+    document.getElementById('lock-badge').textContent = '🔓 ปลดล็อก';
+    document.getElementById('lock-badge').classList.add('unlocked');
+    if (pinCallback) { pinCallback(); pinCallback = null; }
+  } else {
+    document.getElementById('pin-error').textContent = 'PIN ไม่ถูกต้อง ลองใหม่';
+    document.getElementById('pin-input').value = '';
+    document.getElementById('pin-input').focus();
+  }
+}
+
+function closePinModal() {
+  document.getElementById('pin-overlay').classList.remove('open');
+  pinCallback = null;
+}
+
+function toggleLock() {
+  if (isUnlocked) {
+    isUnlocked = false;
+    document.getElementById('lock-badge').textContent = '🔒 ล็อก';
+    document.getElementById('lock-badge').classList.remove('unlocked');
+    toast('ล็อกการแก้ไขแล้ว', '🔒');
+  } else {
+    requirePin(() => toast('ปลดล็อกสำเร็จ', '🔓'));
+  }
+}
+
+function savePin() {
+  const np = document.getElementById('new-pin').value;
+  const cp = document.getElementById('confirm-pin').value;
+  if (np.length < 4) { toast('PIN ต้องมีอย่างน้อย 4 หลัก', '⚠'); return; }
+  if (np !== cp) { toast('PIN ไม่ตรงกัน', '⚠'); return; }
+  requirePin(() => {
+    localStorage.setItem('fda_pin', np);
+    document.getElementById('new-pin').value = '';
+    document.getElementById('confirm-pin').value = '';
+    toast('บันทึก PIN ใหม่แล้ว', '✓');
+  });
+}
+
+// ── Date helpers ───────────────────────────────────────────────
+function fmtDate(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  if (isNaN(d)) return iso;
+  const dd = String(d.getDate()).padStart(2,'0');
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const yy = d.getFullYear()+543; // BE
+  return `${dd}/${mm}/${yy}`;
+}
+
+function fmtDateShort(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  if (isNaN(d)) return iso;
+  const months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()+543}`;
+}
+
+// ── Navigation ─────────────────────────────────────────────────
+function showPage(name, btn) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  if (btn) btn.classList.add('active');
+  closeModal(); closeDetail();
+  if (name==='dashboard') renderDashboard();
+  if (name==='cases') { renderCases(); filterCases(); }
+}
+
+// ── ETA ────────────────────────────────────────────────────────
+function calcETA(submitDate, deviceClass, pathway) {
+  if (!submitDate||!deviceClass) return {date:null,min:'',max:''};
+  const cfg = ETA_CONFIG[deviceClass]; if(!cfg) return {date:null,min:'',max:''};
+  const pw = pathway==='abridged'?'abridged':'normal';
+  const r = cfg[pw];
+  const base = new Date(submitDate).getTime();
+  const fmtISO = n => new Date(base+n*86400000).toISOString().split('T')[0];
+  return {date:fmtISO(r.mid), min:fmtISO(r.min), max:fmtISO(r.max)};
+}
+
+function updateETA() {
+  const sd=document.getElementById('f-submit-date').value;
+  const dc=document.getElementById('f-class').value;
+  const pw=document.getElementById('f-pathway').value;
+  const inp=document.getElementById('f-eta');
+  const note=document.getElementById('eta-note');
+  if (!sd||!dc) { inp.value=''; note.textContent=!dc?'เลือก Class เพื่อคำนวณ ETA':'ระบุวันยื่นเพื่อคำนวณ'; return; }
+  const eta=calcETA(sd,dc,pw);
+  inp.value=eta.date;
+  const r=ETA_CONFIG[dc][pw==='abridged'?'abridged':'normal'];
+  note.textContent=`ประมาณ ${r.min}–${r.max} วันจากวันยื่น · ${fmtDate(eta.min)} – ${fmtDate(eta.max)}`;
+}
+
+// ── ETA cell ───────────────────────────────────────────────────
+function etaCell(eta, stage) {
+  if (stage===7) return '<span style="color:var(--green-text);font-size:12px;">✓ ได้รับแล้ว</span>';
+  if (!eta||!eta.date) return '<span style="color:var(--text4);font-size:11px;">ระบุ Class เพื่อคำนวณ</span>';
+  const days = Math.ceil((new Date(eta.date)-new Date())/86400000);
+  const cls = days<0?'eta-over':days<30?'eta-warn':'eta-ok';
+  const lbl = days<0?`เกิน ${Math.abs(days)} วัน`:`อีก ${days} วัน`;
+  return `<div class="${cls}">${fmtDateShort(eta.date)}</div><div class="eta-sub">${lbl}${eta.min?' · '+fmtDate(eta.min)+'–'+fmtDate(eta.max):''}</div>`;
+}
+
+// ── Progress bar (7 stages) ────────────────────────────────────
+function progressBar(stage) {
+  const c={1:'s1',2:'s2',3:'s3',4:'s4',5:'s5',6:'s6',7:'s7'};
+  let s='';
+  for(let i=1;i<=7;i++) s+=`<div class="progress-seg${i<=stage?' filled '+c[stage]:''}"></div>`;
+  return `<div class="progress-bar">${s}</div>`;
+}
+
+// ── Render Dashboard ───────────────────────────────────────────
+function renderDashboard() {
+  const cnt={};
+  for(let i=1;i<=7;i++) cnt[i]=0;
+  cases.forEach(c=>cnt[c.stage]=(cnt[c.stage]||0)+1);
+  const inProgress = (cnt[2]||0)+(cnt[3]||0)+(cnt[4]||0)+(cnt[5]||0)+(cnt[6]||0);
+  document.getElementById('stats-grid').innerHTML=`
+    <div class="stat-card s-all"><div class="stat-label">ทั้งหมด</div><div class="stat-value">${cases.length}</div><div class="stat-sub">รายการ</div></div>
+    <div class="stat-card s-prep"><div class="stat-label">เตรียมเอกสาร</div><div class="stat-value">${cnt[1]||0}</div><div class="stat-sub">รายการ</div></div>
+    <div class="stat-card s-active"><div class="stat-label">กำลังดำเนินการ</div><div class="stat-value">${inProgress}</div><div class="stat-sub">รายการ</div></div>
+    <div class="stat-card s-done"><div class="stat-label">ได้รับใบอนุญาต</div><div class="stat-value">${cnt[7]||0}</div><div class="stat-sub">รายการ</div></div>`;
+  const sorted=[...cases].sort((a,b)=>new Date(b.updatedAt)-new Date(a.updatedAt)).slice(0,10);
+  const tbody=document.getElementById('dashboard-tbody');
+  if(!sorted.length){tbody.innerHTML=`<tr><td colspan="7"><div class="empty-state">ยังไม่มี Case — กด "+ เพิ่ม Case"</div></td></tr>`;return;}
+  tbody.innerHTML=sorted.map(c=>{
+    const eta=c.etaDate?{date:c.etaDate,min:c.etaMin,max:c.etaMax}:calcETA(c.submitDate,c.deviceClass,c.pathway);
+    return `<tr style="cursor:pointer;" onclick="openDetail('${c.id}')">
+      <td><div class="product-name">${c.product}</div><div class="product-sub">${c.id}</div></td>
+      <td style="font-size:12px;color:var(--text3);">${c.supplier}</td>
+      <td><span class="stage-badge ${STAGES[c.stage].cls}">${STAGES[c.stage].label}</span></td>
+      <td>${c.deviceClass?`<span class="class-badge">C${c.deviceClass}</span>`:'—'}</td>
+      <td>${etaCell(eta,c.stage)}</td>
+      <td style="font-size:12px;color:var(--text4);">${fmtDateShort(c.submitDate)}</td>
+      <td style="font-size:11px;color:var(--text4);">${timeAgo(c.updatedAt)}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── Render Cases ───────────────────────────────────────────────
+function renderCases(data) {
+  const list=data||cases;
+  const tbody=document.getElementById('cases-tbody');
+  if(!list.length){tbody.innerHTML=`<tr><td colspan="10"><div class="empty-state">ไม่พบข้อมูล</div></td></tr>`;return;}
+  tbody.innerHTML=list.map(c=>{
+    const eta=c.etaDate?{date:c.etaDate,min:c.etaMin,max:c.etaMax}:calcETA(c.submitDate,c.deviceClass,c.pathway);
+    return `<tr>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text4);">${c.id}</td>
+      <td><div class="product-name" style="cursor:pointer;" onclick="openDetail('${c.id}')">${c.product}</div>${c.skynetRef?`<a class="skynet-link" href="#" onclick="return false;">SKY:${c.skynetRef}</a>`:''}</td>
+      <td style="font-size:12px;color:var(--text2);">${c.supplier}</td>
+      <td><span class="stage-badge ${STAGES[c.stage].cls}">${STAGES[c.stage].label}</span></td>
+      <td>${progressBar(c.stage)}</td>
+      <td>${c.deviceClass?`<span class="class-badge">C${c.deviceClass}</span>`:'<span style="color:var(--text4);font-size:11px;">—</span>'}</td>
+      <td style="font-size:12px;color:var(--text3);">${fmtDateShort(c.submitDate)}</td>
+      <td>${etaCell(eta,c.stage)}</td>
+      <td style="font-size:12px;color:var(--text2);">${c.officer||'—'}</td>
+      <td><div class="action-row">
+        <button class="btn btn-outline btn-sm" onclick="requirePin(()=>openEditModal('${c.id}'))">แก้ไข</button>
+        <button class="btn btn-danger btn-sm" onclick="requirePin(()=>deleteCase('${c.id}'))">ลบ</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function filterCases() {
+  const q=document.getElementById('search-input').value.toLowerCase();
+  const st=document.getElementById('filter-stage').value;
+  const su=document.getElementById('filter-supplier').value;
+  renderCases(cases.filter(c=>
+    (!q||c.product.toLowerCase().includes(q)||c.id.toLowerCase().includes(q)||c.supplier.toLowerCase().includes(q))&&
+    (!st||String(c.stage)===st)&&(!su||c.supplier===su)));
+}
+
+function updateSupplierFilter() {
+  const sups=[...new Set(cases.map(c=>c.supplier))].sort();
+  const sel=document.getElementById('filter-supplier');
+  const cur=sel.value;
+  sel.innerHTML='<option value="">ทุก Supplier</option>'+sups.map(s=>`<option value="${s}"${s===cur?' selected':''}>${s}</option>`).join('');
+}
+
+// ── Modal ──────────────────────────────────────────────────────
+function openAddModal() {
+  closeDetail();
+  editingId=null;
+  document.getElementById('modal-title').textContent='เพิ่ม Case ใหม่';
+  ['f-product','f-supplier','f-submit-date','f-deadline','f-skynet','f-note'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-id').value=suggestId();
+  document.getElementById('f-id').readOnly=false;
+  document.getElementById('f-officer').value='Pluem';
+  document.getElementById('f-class').value='';
+  document.getElementById('f-pathway').value='normal';
+  document.getElementById('f-eta').value='';
+  document.getElementById('eta-note').textContent='เลือก Class และวันที่ยื่นเพื่อคำนวณ';
+  selectStage(1);
+  document.getElementById('modal-wrap').classList.add('open');
+  document.getElementById('modal-wrap').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function openEditModal(id) {
+  closeDetail();
+  const c=cases.find(x=>x.id===id); if(!c) return;
+  editingId=id;
+  document.getElementById('modal-title').textContent='แก้ไข Case';
+  document.getElementById('f-id').value=c.id; document.getElementById('f-id').readOnly=true;
+  document.getElementById('f-product').value=c.product;
+  document.getElementById('f-supplier').value=c.supplier;
+  document.getElementById('f-submit-date').value=c.submitDate||'';
+  document.getElementById('f-deadline').value=c.deadline||'';
+  document.getElementById('f-officer').value=c.officer||'';
+  document.getElementById('f-skynet').value=c.skynetRef||'';
+  document.getElementById('f-note').value=c.note||'';
+  document.getElementById('f-class').value=c.deviceClass||'';
+  document.getElementById('f-pathway').value=c.pathway||'normal';
+  selectStage(c.stage); updateETA();
+  document.getElementById('modal-wrap').classList.add('open');
+  document.getElementById('modal-wrap').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function closeModal() { document.getElementById('modal-wrap').classList.remove('open'); document.getElementById('f-id').readOnly=false; }
+
+function selectStage(n) {
+  document.getElementById('f-stage').value=n;
+  document.querySelectorAll('.stage-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll(`.stage-btn.s${n}`).forEach(b=>b.classList.add('active'));
+}
+
+function suggestId() { return `RA-${new Date().getFullYear()+543}-${String(cases.length+1).padStart(3,'0')}`; }
+
+function saveCase() {
+  const id=document.getElementById('f-id').value.trim();
+  const product=document.getElementById('f-product').value.trim();
+  const supplier=document.getElementById('f-supplier').value.trim();
+  if(!id||!product||!supplier){toast('กรุณากรอกข้อมูลที่จำเป็น','⚠');return;}
+  const dc=document.getElementById('f-class').value;
+  const pw=document.getElementById('f-pathway').value;
+  const sd=document.getElementById('f-submit-date').value;
+  const eta=calcETA(sd,dc,pw);
+  const rec={id,product,supplier,stage:parseInt(document.getElementById('f-stage').value),
+    submitDate:sd,deadline:document.getElementById('f-deadline').value,
+    officer:document.getElementById('f-officer').value.trim(),
+    skynetRef:document.getElementById('f-skynet').value.trim(),
+    note:document.getElementById('f-note').value.trim(),
+    deviceClass:dc?parseInt(dc):'',pathway:pw,
+    etaDate:eta.date||'',etaMin:eta.min||'',etaMax:eta.max||'',
+    updatedAt:new Date().toISOString()};
+  if(editingId){const i=cases.findIndex(c=>c.id===editingId);if(i>=0)cases[i]=rec;}
+  else{if(cases.find(c=>c.id===id)){toast('รหัส Case นี้มีอยู่แล้ว','⚠');return;}cases.push(rec);}
+  saveLocal(); syncToGAS(editingId?'update':'add',rec);
+  closeModal(); updateSupplierFilter(); renderDashboard(); renderCases(); filterCases();
+  toast(editingId?'อัปเดตสำเร็จ':'เพิ่ม Case สำเร็จ');
+}
+
+function deleteCase(id) {
+  if(!confirm(`ต้องการลบ Case "${id}"?`)) return;
+  cases=cases.filter(c=>c.id!==id); saveLocal(); syncToGAS('delete',{id});
+  updateSupplierFilter(); renderDashboard(); renderCases(); filterCases(); toast('ลบ Case แล้ว','🗑');
+}
+
+// ── Detail ─────────────────────────────────────────────────────
+function openDetail(id) {
+  closeModal();
+  const c=cases.find(x=>x.id===id); if(!c) return;
+  document.getElementById('detail-title').textContent=c.product;
+  document.getElementById('detail-edit-btn').onclick=()=>{closeDetail();requirePin(()=>openEditModal(id));};
+  const eta=c.etaDate?{date:c.etaDate,min:c.etaMin,max:c.etaMax}:calcETA(c.submitDate,c.deviceClass,c.pathway);
+  const CL={1:'Class 1 (ความเสี่ยงต่ำ)',2:'Class 2 (ความเสี่ยงปานกลาง)',3:'Class 3 (ความเสี่ยงสูง)',4:'Class 4 (ความเสี่ยงสูงมาก)'};
+  let etaHTML='—';
+  if(eta&&eta.date&&c.stage<7){
+    const d=Math.ceil((new Date(eta.date)-new Date())/86400000);
+    const col=d<0?'var(--red-text)':d<30?'var(--orange-text)':'var(--teal-text)';
+    etaHTML=`<span style="color:${col};font-weight:600;">${fmtDateShort(eta.date)}</span>
+      <div style="font-size:11px;color:var(--text3);margin-top:2px;">ช่วง: ${fmtDate(eta.min)} – ${fmtDate(eta.max)} · ${d<0?`เกิน ${Math.abs(d)} วัน`:`อีก ${d} วัน`}</div>
+      <div style="font-size:10px;color:var(--text4);">* ประมาณการเท่านั้น ไม่ใช่วันที่ยืนยัน</div>`;
+  } else if(c.stage===7) etaHTML='<span style="color:var(--green-text);">✓ ได้รับใบอนุญาตแล้ว</span>';
+  const rows=[
+    ['รหัส Case',`<span style="font-family:'IBM Plex Mono',monospace;color:var(--teal-text);">${c.id}</span>`],
+    ['Supplier',c.supplier],
+    ['สถานะ',`<span class="stage-badge ${STAGES[c.stage].cls}">${STAGES[c.stage].label}</span>`],
+    ['คืบหน้า',progressBar(c.stage)],
+    ['Class',c.deviceClass?CL[c.deviceClass]:'—'],
+    ['เส้นทาง',c.pathway==='abridged'?'Abridged (อ้างอิง Big 5)':'ปกติ (Normal)'],
+    ['วันที่ยื่น',fmtDateShort(c.submitDate)],
+    ['ETA คาดแล้วเสร็จ',etaHTML],
+    ['Deadline',fmtDateShort(c.deadline)],
+    ['RA รับผิดชอบ',c.officer||'—'],
+    ['เลข Skynet',c.skynetRef?`<span class="code-badge">${c.skynetRef}</span>`:'—'],
+    ['หมายเหตุ',c.note||'—'],
+    ['อัปเดตล่าสุด',timeAgo(c.updatedAt)],
+  ];
+  document.getElementById('detail-body').innerHTML=rows.map(([k,v])=>
+    `<div class="detail-row"><div class="detail-key">${k}</div><div class="detail-val">${v}</div></div>`).join('');
+  document.getElementById('detail-wrap').classList.add('open');
+  document.getElementById('detail-wrap').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function closeDetail() { document.getElementById('detail-wrap').classList.remove('open'); }
+
+// ── GAS sync ───────────────────────────────────────────────────
+function saveGasConfig() {
+  gasUrl=document.getElementById('gas-url').value.trim();
+  localStorage.setItem('fda_gas_url',gasUrl);
+  document.getElementById('gas-status').textContent=gasUrl?'✓ URL บันทึกแล้ว':'—';
+  document.getElementById('gas-status').style.color=gasUrl?'var(--green-text)':'var(--text3)';
+}
+
+async function testConnection() {
+  if(!gasUrl){toast('กรุณากรอก URL ก่อน','⚠');return;}
+  try{const r=await fetch(gasUrl);const d=await r.json();toast(d.success?'เชื่อมต่อสำเร็จ ✓':'Response ผิดปกติ','✓');}
+  catch{toast('เชื่อมต่อไม่ได้','✗');}
+}
+
+async function syncNow() {
+  if(!gasUrl) return;
+  try{
+    const r=await fetch(gasUrl);const d=await r.json();
+    if(d.success&&d.data&&d.data.length>0&&d.data[0].id){
+      cases=d.data.map(row=>({
+        id:row.id,product:row.product,supplier:row.supplier,
+        stage:parseInt(row.stage)||1,submitDate:row.submitDate||'',
+        deadline:row.deadline||'',officer:row.officer||'',
+        skynetRef:row.skynetRef||'',note:row.note||'',
+        deviceClass:row.deviceClass?parseInt(row.deviceClass):'',
+        pathway:row.pathway||'normal',
+        etaDate:row.etaDate||'',etaMin:'',etaMax:'',
+        updatedAt:row.updatedAt||new Date().toISOString()
+      }));
+      saveLocal();updateSupplierFilter();renderDashboard();renderCases();filterCases();
+      document.getElementById('last-sync').textContent='Sync ✓ '+new Date().toLocaleTimeString('th-TH');
+    } else {
+      document.getElementById('last-sync').textContent='เชื่อมต่อ GSheets แล้ว (ชีตว่าง — ข้อมูลจาก local)';
+    }
+  } catch {
+    document.getElementById('last-sync').textContent='Google Sheets: ออฟไลน์ — ใช้ข้อมูล local';
+  }
+}
+
+async function syncToGAS(action,data) {
+  if(!gasUrl) return;
+  try{
+    const params=new URLSearchParams();
+    params.set('action',action);
+    params.set('data',JSON.stringify(data));
+    const r=await fetch(gasUrl+'?'+params.toString(),{redirect:'follow'});
+    const d=await r.json();
+    if(d.success) document.getElementById('last-sync').textContent='บันทึก GSheet ✓ '+new Date().toLocaleTimeString('th-TH');
+    else console.warn('GAS error:',d.error);
+  } catch(e){ console.warn('syncToGAS failed:',e); }
+}
+
+// ── Utils ──────────────────────────────────────────────────────
+function saveLocal(){localStorage.setItem('fda_cases',JSON.stringify(cases));}
+
+function timeAgo(iso){
+  const m=Math.floor((Date.now()-new Date(iso).getTime())/60000);
+  if(m<1) return 'เมื่อกี้';
+  if(m<60) return `${m} นาทีที่แล้ว`;
+  const h=Math.floor(m/60);
+  if(h<24) return `${h} ชั่วโมงที่แล้ว`;
+  return `${Math.floor(h/24)} วันที่แล้ว`;
+}
+
+function toast(msg,icon='✓'){
+  document.getElementById('toast-msg').textContent=msg;
+  document.getElementById('toast-icon').textContent=icon;
+  const el=document.getElementById('toast');
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2800);
+}
+
+function clearData(){
+  if(!confirm('ล้างข้อมูลทั้งหมด?')) return;
+  cases=[];saveLocal();renderDashboard();renderCases();toast('ล้างข้อมูลแล้ว','🗑');
+}
+
+function exportCSV(){
+  const h=['id','product','supplier','stage','stageLabel','submitDate','etaDate','deadline','officer','skynetRef','note'];
+  const rows=cases.map(c=>h.map(k=>k==='stageLabel'?STAGES[c.stage].label:(c[k]||'').toString().replace(/,/g,'')));
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\uFEFF'+[h,...rows].map(r=>r.join(',')).join('\n')],{type:'text/csv;charset=utf-8;'}));
+  a.download=`fda_tracker_${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();toast('Export CSV สำเร็จ');
+}
+
+function copyScript(){
+  navigator.clipboard.writeText(document.getElementById('gas-code').textContent)
+    .then(()=>toast('Copy script สำเร็จ'));
+}
+
+function loadSampleData(){
+  const t=new Date();
+  const fmt=d=>d.toISOString().split('T')[0];
+  const add=(d,n)=>{const r=new Date(d);r.setDate(r.getDate()+n);return r;};
+  cases=[
+    {id:'RA-2568-001',product:'AccuScreen (8-04-13924)',supplier:'Natus Medical',stage:3,submitDate:fmt(add(t,-45)),deadline:'',officer:'Pluem',skynetRef:'SKY-68-0012',note:'รอผล อย.',deviceClass:2,pathway:'abridged',updatedAt:new Date().toISOString()},
+    {id:'RA-2568-002',product:'neoBLUE LED Phototherapy',supplier:'Natus Medical',stage:2,submitDate:fmt(add(t,-10)),deadline:'',officer:'Pluem',skynetRef:'SKY-68-0018',note:'ยื่น e-Submission เรียบร้อย',deviceClass:2,pathway:'abridged',updatedAt:new Date().toISOString()},
+    {id:'RA-2568-003',product:'GIVAS Electric Hospital Bed',supplier:'GIVAS S.r.l.',stage:1,submitDate:'',deadline:'',officer:'Pluem',skynetRef:'',note:'รอ FSC จาก Terry',deviceClass:1,pathway:'normal',updatedAt:new Date().toISOString()},
+    {id:'RA-2567-021',product:'Healthweigh Scale Series',supplier:'Rice Lake',stage:7,submitDate:fmt(add(t,-180)),deadline:'',officer:'Pluem',skynetRef:'SKY-67-0099',note:'ได้รับใบอนุญาตแล้ว',deviceClass:1,pathway:'normal',updatedAt:new Date().toISOString()},
+    {id:'RA-2568-004',product:'QuantalX EEG System',supplier:'QuantalX',stage:4,submitDate:fmt(add(t,-30)),deadline:'',officer:'Pluem',skynetRef:'SKY-68-0021',note:'อย. ถามเรื่อง clinical data',deviceClass:3,pathway:'abridged',updatedAt:new Date().toISOString()},
+  ];
+  cases.forEach(c=>{const e=calcETA(c.submitDate,c.deviceClass,c.pathway);c.etaDate=e.date||'';c.etaMin=e.min||'';c.etaMax=e.max||'';});
+  saveLocal();
+}
+
+setInterval(()=>{if(gasUrl) syncNow();},30000);
+</script>
+</body>
+</html>
